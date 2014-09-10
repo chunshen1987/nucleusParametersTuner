@@ -97,6 +97,22 @@ double Nucleus::woods_saxon_distribution(double r, double phi, double cos_theta)
     return(density);
 }
 
+double Nucleus::standard_woods_saxon_distribution(double r, double phi, double cos_theta)
+{
+    double density;
+
+    if(deformed)
+    {
+        double y20 = spherical_harmonics(2, cos_theta);
+        double y40 = spherical_harmonics(4, cos_theta);
+        double r_0_deformed =r_0_std*(1.0 + beta2_std*y20 + beta4_std*y40);
+        density = rho_0/(1.0 + exp((r - r_0_deformed)/xsi_std));
+    }
+    else
+        density = rho_0/(1.0 + exp((r - r_0_std)/xsi_std));
+    return(density);
+}
+
 double Nucleus::spherical_harmonics(int l, double cos_theta)
 {
   //Currently assuming m=0 and available for Y_{20} and Y_{40}

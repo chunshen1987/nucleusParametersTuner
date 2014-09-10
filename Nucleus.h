@@ -33,6 +33,7 @@ class Nucleus
 
         // main function: returns a random coordinate of nucleon
         double woods_saxon_distribution(double r, double phi, double cos_theta);
+        double standard_woods_saxon_distribution(double r, double phi, double cos_theta);
         void get_nucleon_corrdinate(double& x, double& y, double& z);
         double spherical_harmonics(int l, double cos_theta);
 
