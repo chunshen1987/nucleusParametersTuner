@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     if (randomSeed<0) randomSeed=a.tv_usec; // randomSeed<0 means to use CPU clock
     srand48(randomSeed);
 
-    Nucleus test(208, 6.0, 0.5, false, 0.0, 0.0);
+    Nucleus test(&paraRdr);
     double x, y, z;
     test.get_nucleon_corrdinate(x, y, z);
     cout << x << "   " << y << "   " << z << endl;

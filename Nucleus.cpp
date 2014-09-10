@@ -1,27 +1,22 @@
 #include <cstdlib>
 #include <cmath>
 
-#include "nucleus.h"
+#include "Nucleus.h"
+#include "ParameterReader.h"
 
 using namespace std;
 
-Nucleus::Nucleus(int atomic_num_in, double r_0_in, double xsi_in, 
-                 bool deformed_in, double beta2_in, double beta4_in)
+Nucleus::Nucleus(ParameterReader* paraRdr_in)
 {
-    atomic_num = atomic_num_in;
+    paraRdr = paraRdr_in;
+    atomic_num = paraRdr->getVal("atomic_num");
     atomic_mass = (double) atomic_num;
-    deformed = deformed_in;
+    deformed = paraRdr->getVal("deformed");
 
-    r_0 = r_0_in;
-    xsi = xsi_in;
-    beta2 = beta2_in;
-    beta4 = beta4_in;
-    
     // generic (crude) default parameterization of radius and surface thickness
     rho_0 = 0.17;
     r_0_std = 1.12*pow(atomic_mass, 1./3.)-0.86/pow(atomic_mass, 1./3.);
     xsi_std = 0.54;
-
     //taken from C.W.De Jager et al. Atom.Data.Nucl.Data Tabl.36, 495 (1987).
     if(atomic_num == 197)
     {
@@ -49,6 +44,11 @@ Nucleus::Nucleus(int atomic_num_in, double r_0_in, double xsi_in,
         rho_0 = 0.17;
     }
 
+    r_0 = r_0_std;
+    xsi = xsi_std;
+    beta2 = beta2_std;
+    beta4 = beta4_std;
+
     ws_max = rho_0/(1. + exp(-r_0/xsi));
 
     r_max = r_0 + 5.0*xsi;
@@ -57,6 +57,12 @@ Nucleus::Nucleus(int atomic_num_in, double r_0_in, double xsi_in,
 Nucleus::~Nucleus()
 {
 
+}
+
+void Nucleus::set_woods_saxon_parameters(double r0_in, double xsi_in)
+{
+    r_0 = r0_in;
+    xsi = xsi_in;
 }
 
 void Nucleus::get_nucleon_corrdinate(double& x, double& y, double& z)
@@ -79,6 +85,11 @@ void Nucleus::get_nucleon_corrdinate(double& x, double& y, double& z)
     z = r*cos_theta;
 
     return;
+}
+
+void Nucleus::generate_nucleus()
+{
+
 }
 
 double Nucleus::woods_saxon_distribution(double r, double phi, double cos_theta)

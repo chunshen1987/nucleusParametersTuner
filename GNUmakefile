@@ -11,7 +11,7 @@
 ##  
 
 CC := g++
-CFLAGS := -O3 $(shell gsl-config --cflags)
+CFLAGS := -g $(shell gsl-config --cflags)
 
 RM		=	rm -f
 O               =       .o
@@ -26,7 +26,7 @@ endif
 
 SRC		=	main.cpp Nucleus.cpp ParameterReader.cpp
 
-INC		= 	Nucleus.h ParameterReader.h
+INC		= 	Nucleus.h ParameterReader.h Particle.h
 
 
 # -------------------------------------------------
@@ -73,5 +73,6 @@ install:	$(TARGET)
 		cp $(TARGET) $(INSTPATH)
 
 # --------------- Dependencies -------------------
-./main.cpp: Nucleus.h 
-./Nucleus.cpp: Nucleus.h
+./main.cpp: Nucleus.h ParameterReader.h
+./Nucleus.cpp: Nucleus.h ParameterReader.h
+./ParameterReader.cpp: ParameterReader.h
