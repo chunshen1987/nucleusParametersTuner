@@ -11,7 +11,7 @@
 ##  
 
 CC := g++
-CFLAGS= -O3
+CFLAGS := -O3 $(shell gsl-config --cflags)
 
 RM		=	rm -f
 O               =       .o
@@ -24,9 +24,9 @@ ifeq "$(MAIN)" ""
 MAIN		=	nucleusParametersTuner.e
 endif
 
-SRC		=	main.cpp Nucleus.cpp
+SRC		=	main.cpp Nucleus.cpp ParameterReader.cpp
 
-INC		= 	Nucleus.h
+INC		= 	Nucleus.h ParameterReader.h
 
 
 # -------------------------------------------------
