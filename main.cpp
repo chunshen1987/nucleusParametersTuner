@@ -9,6 +9,7 @@
 #include <sys/time.h>
 
 #include "Nucleus.h"
+#include "MakeDensity.h"
 #include "ParameterReader.h"
 
 using namespace std;
@@ -32,14 +33,9 @@ int main(int argc, char *argv[])
     if (randomSeed<0) randomSeed=a.tv_usec; // randomSeed<0 means to use CPU clock
     srand48(randomSeed);
 
-    Nucleus test(&paraRdr);
-    test.generate_nucleus();
-    for(int i = 0; i < test.get_atomic_num(); i++)
-    {
-        double x, y, z;
-        test.get_nucleon_position(i, x, y, z);
-        cout << x << "   " << y << "   " << z << endl;
-    }
+    MakeDensity rho(&paraRdr);
+    rho.calculate_rho_r(6.62, 0.546);
+    cout << rho.compare_rho_r_with_standard_ws() << endl;
 
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;

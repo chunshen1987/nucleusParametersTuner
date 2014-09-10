@@ -35,7 +35,7 @@ Nucleus::Nucleus(ParameterReader* paraRdr_in)
     {
         r_0_std = 6.62;
         xsi_std = 0.546;
-        rho_0 = 0.17;
+        rho_0 = 0.16;
     }
     else if (atomic_num == 238)
     {
@@ -90,6 +90,7 @@ void Nucleus::sample_nucleon_corrdinate(double& x, double& y, double& z)
 
 void Nucleus::generate_nucleus()
 {
+    nucleus.erase(nucleus.begin(), nucleus.end());
     double xcm = 0.0;
     double ycm = 0.0;
     double zcm = 0.0;
