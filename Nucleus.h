@@ -4,7 +4,10 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include <vector>
+
 #include "ParameterReader.h"
+#include "Particle.h"
 
 class Nucleus
 {
@@ -30,6 +33,8 @@ class Nucleus
 
         double r_max;      // the maximum radius for MC-sampling
 
+        vector<Particle*> nucleus;
+
     public:
         Nucleus(ParameterReader* paraRdr_in);
         ~Nucleus();
@@ -37,9 +42,12 @@ class Nucleus
         void set_woods_saxon_parameters(double r0_in, double xsi_in);
         double woods_saxon_distribution(double r, double phi, double cos_theta);
         double standard_woods_saxon_distribution(double r, double phi, double cos_theta);
-        void get_nucleon_corrdinate(double& x, double& y, double& z);
+        void sample_nucleon_corrdinate(double& x, double& y, double& z);
         void generate_nucleus();
         double spherical_harmonics(int l, double cos_theta);
+
+        int get_atomic_num(){return(atomic_num);};
+        void get_nucleon_position(int index, double& x, double& y, double& z);
 
 };
 

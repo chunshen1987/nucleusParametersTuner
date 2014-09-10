@@ -12,6 +12,7 @@ Nucleus::Nucleus(ParameterReader* paraRdr_in)
     atomic_num = paraRdr->getVal("atomic_num");
     atomic_mass = (double) atomic_num;
     deformed = paraRdr->getVal("deformed");
+    r_min = paraRdr->getVal("r_min");
 
     // generic (crude) default parameterization of radius and surface thickness
     rho_0 = 0.17;
@@ -65,7 +66,7 @@ void Nucleus::set_woods_saxon_parameters(double r0_in, double xsi_in)
     xsi = xsi_in;
 }
 
-void Nucleus::get_nucleon_corrdinate(double& x, double& y, double& z)
+void Nucleus::sample_nucleon_corrdinate(double& x, double& y, double& z)
 {
     double r;
     double cos_theta;
@@ -89,7 +90,55 @@ void Nucleus::get_nucleon_corrdinate(double& x, double& y, double& z)
 
 void Nucleus::generate_nucleus()
 {
+    double xcm = 0.0;
+    double ycm = 0.0;
+    double zcm = 0.0;
+    for(int i_nucleon=0; i_nucleon < atomic_num; i_nucleon++)
+    {
+        double x,y,z;
+        int icon=0;
+        do
+        {
+            sample_nucleon_corrdinate(x,y,z);
+            icon=0;
+            for(int i = 0; i<(int)nucleus.size(); i++)
+            {
+                double x1=nucleus[i]->getX();
+                double y1=nucleus[i]->getY();
+                double z1=nucleus[i]->getZ();
+                double r2 = (x-x1)*(x-x1) + (y-y1)*(y-y1) + (z-z1)*(z-z1);
+                if(r2 < r_min)
+                {
+                    icon=1;
+                    break;
+                }
+            }
+        } while(icon==1);
 
+        xcm +=x;
+        ycm +=y;
+        zcm +=z;
+        nucleus.push_back(new Particle(x,y,z));
+    }
+
+    for(int i_nucleon = 0; i_nucleon < atomic_num; i_nucleon++)
+    { 
+    // shift center of nucleus
+        double x = nucleus[i_nucleon]->getX() - xcm/atomic_num;
+        double y = nucleus[i_nucleon]->getY() - ycm/atomic_num;
+        double z = nucleus[i_nucleon]->getZ() - zcm/atomic_num;
+        nucleus[i_nucleon]->setX(x);
+        nucleus[i_nucleon]->setY(y);
+        nucleus[i_nucleon]->setZ(z);
+    }
+
+}
+
+void Nucleus::get_nucleon_position(int index, double& x, double& y, double& z)
+{
+    x = nucleus[index]->getX();
+    y = nucleus[index]->getY();
+    z = nucleus[index]->getZ();
 }
 
 double Nucleus::woods_saxon_distribution(double r, double phi, double cos_theta)

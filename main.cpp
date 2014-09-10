@@ -33,9 +33,13 @@ int main(int argc, char *argv[])
     srand48(randomSeed);
 
     Nucleus test(&paraRdr);
-    double x, y, z;
-    test.get_nucleon_corrdinate(x, y, z);
-    cout << x << "   " << y << "   " << z << endl;
+    test.generate_nucleus();
+    for(int i = 0; i < test.get_atomic_num(); i++)
+    {
+        double x, y, z;
+        test.get_nucleon_position(i, x, y, z);
+        cout << x << "   " << y << "   " << z << endl;
+    }
 
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
