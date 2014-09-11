@@ -14,7 +14,7 @@ using namespace std;
 MakeDensity::MakeDensity(ParameterReader *paraRdr_in)
 {
     paraRdr = paraRdr_in;
-    n_event = 100;
+    n_event = paraRdr->getVal("n_event");
 
     // NN cross sections in mb
     double ecm = paraRdr->getVal("ecm");
