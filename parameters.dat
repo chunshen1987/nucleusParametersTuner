@@ -1,0 +1,15 @@
+###############################################
+########## DEFAULT PARAMETERS FILE ############
+###############################################
+
+atomic_num = 208          # atomic number of the nucleus
+ecm = 2760                # collision energy [GeV]
+deformed = 0              # whether the nucleus is deformed or not
+randomSeed = -1           # If randomSeed < 0 then CPU time is used to seed
+r_min = 0.9               # minimum separation between nucleons [fm]
+
+n_r = 40                  # number of lattice points along radial direction
+n_phi = 40                # number of lattice points in azimuthal angle
+n_theta = 40              # number of lattice points in polar angle
+r_max = 12.0              # maximum lattice grid size in radial direction [fm]
+
