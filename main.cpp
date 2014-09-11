@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
     srand48(randomSeed);
 
     MakeDensity rho(&paraRdr);
-    rho.calculate_rho_r(6.62, 0.546);
-    cout << rho.compare_rho_r_with_standard_ws() << endl;
+    rho.minimize_chisq();
+    //rho.calculate_chisq_rho_r(6.62, 0.546);
 
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;

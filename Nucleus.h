@@ -48,6 +48,8 @@ class Nucleus
 
         int get_atomic_num(){return(atomic_num);};
         void get_nucleon_position(int index, double& x, double& y, double& z);
+        double get_ws_r0_std() {return(r_0_std);};
+        double get_ws_xsi_std() {return(xsi_std);};
 
 };
 

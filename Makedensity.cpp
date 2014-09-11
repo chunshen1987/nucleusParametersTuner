@@ -6,12 +6,15 @@
 #include "MakeDensity.h"
 #include "gauss_quadrature.h"
 
+#include <gsl/gsl_vector.h> 
+#include <gsl/gsl_multimin.h>
+
 using namespace std;
 
 MakeDensity::MakeDensity(ParameterReader *paraRdr_in)
 {
     paraRdr = paraRdr_in;
-    n_event = 1000;
+    n_event = 100;
 
     // NN cross sections in mb
     double ecm = paraRdr->getVal("ecm");
@@ -93,9 +96,13 @@ double MakeDensity::calculate_density(double ws_r0, double ws_xsi)
     double prefactor = 1./(pow(gauss_nucl_width, 3)*pow(M_PI, 1.5));
     double sigma_sq = gauss_nucl_width*gauss_nucl_width;
     test_nucleus->set_woods_saxon_parameters(ws_r0, ws_xsi);
+    for(int ir = 0; ir < n_r; ir++)
+         for(int iphi = 0; iphi < n_phi; iphi++)
+             for(int itheta = 0; itheta < n_theta; itheta++)
+                 rho[ir][iphi][itheta] = 0.0;
     for(int i = 0; i < n_event; i ++)
     {
-        cout << "processing event " << i << endl;
+        //cout << "processing event " << i << endl;
         test_nucleus->generate_nucleus();
         for(int inucl = 0; inucl < test_nucleus->get_atomic_num(); inucl++)
         {
@@ -130,9 +137,19 @@ double MakeDensity::calculate_density(double ws_r0, double ws_xsi)
     return(0.0);
 }
 
-double MakeDensity::calculate_rho_r(double ws_r0, double ws_xsi)
+double MakeDensity::calculate_chisq_rho_r(const gsl_vector *v, void* params)
 {
+    double ws_r0, ws_xsi;
+    ws_r0 = gsl_vector_get(v, 0);
+    ws_xsi = gsl_vector_get(v, 1);
+
+    cout << ws_r0 << "   " << ws_xsi << endl;
     calculate_density(ws_r0, ws_xsi);
+    for(int ir = 0; ir < n_r; ir++)
+    {
+        rho_r[ir] = 0.0;
+        rho_r_std[ir] = 0.0;
+    }
     for(int ir = 0; ir < n_r; ir++)
         for(int iphi = 0; iphi < n_phi; iphi++)
             for(int itheta = 0; itheta < n_theta; itheta++)
@@ -140,15 +157,69 @@ double MakeDensity::calculate_rho_r(double ws_r0, double ws_xsi)
                  rho_r[ir] += rho[ir][iphi][itheta]*phi_weight[iphi]*cos_theta_weight[itheta];
                  rho_r_std[ir] += test_nucleus->standard_woods_saxon_distribution(r[ir], phi[iphi], cos_theta[itheta])*phi_weight[iphi]*cos_theta_weight[itheta];
             }
-    return(0.0);
-}
-
-double MakeDensity::compare_rho_r_with_standard_ws()
-{
+    
     double chi_sq = 0.0;
     for(int ir = 0; ir < n_r; ir++)
     {
         chi_sq += pow((rho_r[ir] - rho_r_std[ir]), 2);
     }
     return(chi_sq);
+}
+
+double MakeDensity::minimize_chisq()
+{
+    const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
+    gsl_multimin_fminimizer *s = NULL;
+    gsl_vector *ss, *x;
+    gsl_multimin_function minex_func;
+
+    size_t iter = 0;
+    int status;
+    double size;
+
+    /* Starting point */
+    x = gsl_vector_alloc (2);
+    gsl_vector_set (x, 0, test_nucleus->get_ws_r0_std());
+    gsl_vector_set (x, 1, test_nucleus->get_ws_xsi_std());
+
+    /* Set initial step sizes */
+    ss = gsl_vector_alloc (2);
+    gsl_vector_set (ss, 0, 1.0);
+    gsl_vector_set (ss, 1, 0.3);
+
+    /* Initialize method and iterate */
+    double *paramsPtr = NULL;
+    CCallbackHolder *Callback_params = new CCallbackHolder;
+    Callback_params->clsPtr = this;
+    Callback_params->params = paramsPtr;
+    minex_func.n = 2;
+    minex_func.f = this->CCallback_chisq_rho_r;
+    minex_func.params = Callback_params;
+
+    s = gsl_multimin_fminimizer_alloc (T, 2);
+    gsl_multimin_fminimizer_set (s, &minex_func, x, ss);
+    
+    do
+    {
+        iter++;
+        status = gsl_multimin_fminimizer_iterate(s);
+        
+        if (status) 
+            break;
+        
+        size = gsl_multimin_fminimizer_size (s);
+        status = gsl_multimin_test_size (size, 1e-2);
+
+        if (status == GSL_SUCCESS)
+        {
+            printf ("converged to minimum at\n");
+        }
+        printf ("%5d %10.3e %10.3e f() = %7.3f size = %.3f\n", iter, 
+                gsl_vector_get (s->x, 0), gsl_vector_get (s->x, 1), 
+                s->fval, size);
+    } while (status == GSL_CONTINUE && iter < 100);
+
+    gsl_vector_free(x);
+    gsl_vector_free(ss);
+    gsl_multimin_fminimizer_free(s);
 }

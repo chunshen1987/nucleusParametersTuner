@@ -3,7 +3,16 @@
 
 #include "Nucleus.h"
 #include "ParameterReader.h"
+#include <gsl/gsl_vector.h> 
 
+class MakeDensity;
+
+struct CCallbackHolder
+{
+   MakeDensity* clsPtr;
+   void *params;
+};
+      
 class MakeDensity
 {
     private:
@@ -30,8 +39,13 @@ class MakeDensity
         ~MakeDensity();
         
         double calculate_density(double ws_r0, double ws_xsi);
-        double calculate_rho_r(double ws_r0, double ws_xsi);
-        double compare_rho_r_with_standard_ws();
+        double calculate_chisq_rho_r(const gsl_vector *v, void *params);
+        double minimize_chisq();
+        static double CCallback_chisq_rho_r(const gsl_vector *x, void* params)
+        {
+            CCallbackHolder* h = static_cast<CCallbackHolder*>(params);
+            return h->clsPtr->calculate_chisq_rho_r(x, h->params);
+        }
 
 };
 
