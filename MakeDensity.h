@@ -7,7 +7,7 @@
 
 class MakeDensity;
 
-struct CCallbackHolder
+struct CCallbackHolder   // callback structure for gsl
 {
    MakeDensity* clsPtr;
    void *params;
@@ -17,20 +17,20 @@ class MakeDensity
 {
     private:
         ParameterReader *paraRdr;
-        double gauss_nucl_width;
-        double siginNN;
+        double gauss_nucl_width;          // gaussian width of nucleon size
+        double siginNN;                   // inelastic nucleon-nucleon cross section
 
         int n_r, n_phi, n_theta;
-        double r_max;
-        double*** rho;
-        double *rho_r, *rho_r_std;
+        double r_max;                     // maximum radius in nucleon density distribution
+        double*** rho;                    // 3-d nucleon density distribution
+        double *rho_r, *rho_r_std;        // 1-d nucleon density distribution along radial direction
         double *r, *r_weight;
         double *phi, *phi_weight;
         double *sin_phi, *cos_phi;
         double *cos_theta, *cos_theta_weight;
         double *sin_theta;
         
-        int n_event;
+        int n_event;                      // number of events used to calculate event averaged nucleon density
 
         Nucleus* test_nucleus;
 

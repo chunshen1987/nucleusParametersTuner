@@ -93,6 +93,7 @@ MakeDensity::~MakeDensity()
 
 double MakeDensity::calculate_density(double ws_r0, double ws_xsi)
 {
+    // MC sample nucleus configuration and compute event averaged nucleon density distribution
     double prefactor = 1./(pow(gauss_nucl_width, 3)*pow(M_PI, 1.5));
     double sigma_sq = gauss_nucl_width*gauss_nucl_width;
     test_nucleus->set_woods_saxon_parameters(ws_r0, ws_xsi);
@@ -139,6 +140,7 @@ double MakeDensity::calculate_density(double ws_r0, double ws_xsi)
 
 double MakeDensity::calculate_chisq_rho_r(const gsl_vector *v, void* params)
 {
+    // compute the chi square of the nucleon density distribution along radial direction
     double ws_r0, ws_xsi;
     ws_r0 = gsl_vector_get(v, 0);
     ws_xsi = gsl_vector_get(v, 1);
@@ -168,6 +170,7 @@ double MakeDensity::calculate_chisq_rho_r(const gsl_vector *v, void* params)
 
 double MakeDensity::minimize_chisq()
 {
+    // minimization using gsl routine
     const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
     gsl_multimin_fminimizer *s = NULL;
     gsl_vector *ss, *x;
