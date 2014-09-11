@@ -1,4 +1,5 @@
 #include <iomanip>
+#include <fstream>
 
 #include "Regge96.h"
 #include "ParameterReader.h"
@@ -168,7 +169,7 @@ double MakeDensity::calculate_chisq_rho_r(const gsl_vector *v, void* params)
     return(chi_sq);
 }
 
-double MakeDensity::minimize_chisq()
+void MakeDensity::minimize_chisq()
 {
     // minimization using gsl routine
     const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
@@ -216,13 +217,42 @@ double MakeDensity::minimize_chisq()
         if (status == GSL_SUCCESS)
         {
             printf ("converged to minimum at\n");
+            ws_r0_best = gsl_vector_get(s->x, 0);
+            ws_xsi_best = gsl_vector_get(s->x, 1);
         }
-        printf ("%5d %10.3e %10.3e f() = %7.3f size = %.3f\n", iter, 
+        printf ("%5lu %10.3e %10.3e chi_sq = %7.3f size = %.3f\n", iter, 
                 gsl_vector_get (s->x, 0), gsl_vector_get (s->x, 1), 
                 s->fval, size);
     } while (status == GSL_CONTINUE && iter < 100);
 
+    output_final_rho_r_vs_rho_r_std();
+
     gsl_vector_free(x);
     gsl_vector_free(ss);
     gsl_multimin_fminimizer_free(s);
+    return;
+}
+
+void MakeDensity::output_final_rho_r_vs_rho_r_std()
+{
+    ofstream results("rho_r_vs_rho_r_std.dat");
+    calculate_density(ws_r0_best, ws_xsi_best);
+    for(int ir = 0; ir < n_r; ir++)
+    {
+        rho_r[ir] = 0.0;
+        rho_r_std[ir] = 0.0;
+    }
+    for(int ir = 0; ir < n_r; ir++)
+        for(int iphi = 0; iphi < n_phi; iphi++)
+            for(int itheta = 0; itheta < n_theta; itheta++)
+            {
+                 rho_r[ir] += rho[ir][iphi][itheta]*phi_weight[iphi]*cos_theta_weight[itheta];
+                 rho_r_std[ir] += test_nucleus->standard_woods_saxon_distribution(r[ir], phi[iphi], cos_theta[itheta])*phi_weight[iphi]*cos_theta_weight[itheta];
+            }
+    results << "# r [fm]   rho_r [1/fm^3]   rho_r_std [1/fm^3]" << endl;
+    for(int ir = 0; ir < n_r; ir++)
+        results << scientific << setw(20) << setprecision(6)
+                << r[ir] << "  " << rho_r[ir] << "  " << rho_r_std[ir]
+                << endl;
+    return;
 }

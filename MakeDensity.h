@@ -33,6 +33,7 @@ class MakeDensity
         int n_event;                      // number of events used to calculate event averaged nucleon density
 
         Nucleus* test_nucleus;
+        double ws_r0_best, ws_xsi_best;
 
     public:
         MakeDensity(ParameterReader*);
@@ -40,7 +41,8 @@ class MakeDensity
         
         double calculate_density(double ws_r0, double ws_xsi);
         double calculate_chisq_rho_r(const gsl_vector *v, void *params);
-        double minimize_chisq();
+        void minimize_chisq();
+        void output_final_rho_r_vs_rho_r_std();
         static double CCallback_chisq_rho_r(const gsl_vector *x, void* params)
         {
             CCallbackHolder* h = static_cast<CCallbackHolder*>(params);
