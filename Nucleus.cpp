@@ -45,12 +45,42 @@ Nucleus::Nucleus(ParameterReader* paraRdr_in)
         rho_0 = 0.17;
     }
 
+    if(deformed)
+    {
+        // Parameters taken from Moller et al., Atomic Data and Nuclear Data
+        // Tables, 59, 185-381, (1995).
+        if(atomic_num == 197)  //(Au)
+        {
+            beta2_std = -0.13;
+            beta4_std = -0.03;
+        }
+        else if(atomic_num == 63)  //(Cu)
+        {
+            beta2_std = 0.162;
+            beta4_std = 0.006;
+        }
+        else if(atomic_num == 238)  //(U)
+        {
+            beta2_std = 0.28;
+            beta4_std = 0.093;
+        }
+        else
+        {
+            cerr << "Mass number not available for reparametrization" << endl;
+        }
+    }
+    else
+    {
+        beta2_std = 0.0; beta4_std = 0.0;
+    }
+
+
     r_0 = r_0_std;
     xsi = xsi_std;
     beta2 = beta2_std;
     beta4 = beta4_std;
 
-    ws_max = rho_0/(1. + exp(-r_0/xsi));
+    ws_max = rho_0;
 
     r_max = r_0 + 5.0*xsi;
 }
@@ -64,6 +94,14 @@ void Nucleus::set_woods_saxon_parameters(double r0_in, double xsi_in)
 {
     r_0 = r0_in;
     xsi = xsi_in;
+}
+
+void Nucleus::set_woods_saxon_parameters(double r0_in, double xsi_in, double beta2_in, double beta4_in)
+{
+    r_0 = r0_in;
+    xsi = xsi_in;
+    beta2 = beta2_in;
+    beta4 = beta4_in;
 }
 
 void Nucleus::sample_nucleon_corrdinate(double& x, double& y, double& z)

@@ -34,8 +34,7 @@ int main(int argc, char *argv[])
     srand48(randomSeed);
 
     MakeDensity rho(&paraRdr);
-    rho.minimize_chisq();
-    //rho.calculate_chisq_rho_r(6.62, 0.546);
+    rho.fit_nucleus_parameters();
 
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;

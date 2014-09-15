@@ -40,6 +40,7 @@ class Nucleus
         ~Nucleus();
 
         void set_woods_saxon_parameters(double r0_in, double xsi_in);
+        void set_woods_saxon_parameters(double r0_in, double xsi_in, double beta2_in, double beta4_in);
         double woods_saxon_distribution(double r, double phi, double cos_theta);
         double standard_woods_saxon_distribution(double r, double phi, double cos_theta);
         void sample_nucleon_corrdinate(double& x, double& y, double& z);
@@ -50,6 +51,8 @@ class Nucleus
         void get_nucleon_position(int index, double& x, double& y, double& z);
         double get_ws_r0_std() {return(r_0_std);};
         double get_ws_xsi_std() {return(xsi_std);};
+        double get_ws_beta2_std() {return(beta2_std);};
+        double get_ws_beta4_std() {return(beta4_std);};
 
 };
 
