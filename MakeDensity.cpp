@@ -403,7 +403,7 @@ void MakeDensity::minimize_chisq_deformed()
                 s->fval, size);
     } while (status == GSL_CONTINUE && iter < 100);
 
-    output_final_rho_r_vs_rho_r_std();
+    output_final_rho_r_theta_vs_rho_r_theta_std();
 
     gsl_vector_free(x);
     gsl_vector_free(ss);
