@@ -461,7 +461,7 @@ void MakeDensity::output_final_rho_r_theta_vs_rho_r_theta_std()
     for(int ir = 0; ir < n_r; ir++)
     {
         results << scientific << setw(20) << setprecision(6) << r[ir] << "  ";
-        for(int i = 0; i < (int)(n_theta/2.); i++)
+        for(int i = 0; i < (int)(n_theta/2./n_skip); i++)
         {
             results << scientific << setw(20) << setprecision(6) 
                     << rho_r_theta[ir][i*n_skip] << "  "
