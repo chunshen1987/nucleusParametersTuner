@@ -332,7 +332,7 @@ void MakeDensity::minimize_chisq()
                 s->fval, size);
     } while (status == GSL_CONTINUE && iter < 100);
 
-    output_final_rho_r_vs_rho_r_std();
+    output_final_rho_r_vs_rho_r_std(ws_r0_best, ws_xsi_best);
 
     gsl_vector_free(x);
     gsl_vector_free(ss);
@@ -403,7 +403,7 @@ void MakeDensity::minimize_chisq_deformed()
                 s->fval, size);
     } while (status == GSL_CONTINUE && iter < 100);
 
-    output_final_rho_r_theta_vs_rho_r_theta_std();
+    output_final_rho_r_theta_vs_rho_r_theta_std(ws_r0_best, ws_xsi_best, ws_beta2_best, ws_beta4_best);
 
     gsl_vector_free(x);
     gsl_vector_free(ss);
@@ -411,10 +411,10 @@ void MakeDensity::minimize_chisq_deformed()
     return;
 }
 
-void MakeDensity::output_final_rho_r_vs_rho_r_std()
+void MakeDensity::output_final_rho_r_vs_rho_r_std(double ws_r0_in, double ws_xsi_in)
 {
     ofstream results("rho_r_vs_rho_r_std.dat");
-    calculate_density(ws_r0_best, ws_xsi_best);
+    calculate_density(ws_r0_in, ws_xsi_in);
     for(int ir = 0; ir < n_r; ir++)
     {
         rho_r[ir] = 0.0;
@@ -427,6 +427,7 @@ void MakeDensity::output_final_rho_r_vs_rho_r_std()
                  rho_r[ir] += rho[ir][iphi][itheta]*phi_weight[iphi]*cos_theta_weight[itheta];
                  rho_r_std[ir] += test_nucleus->standard_woods_saxon_distribution(r[ir], phi[iphi], cos_theta[itheta])*phi_weight[iphi]*cos_theta_weight[itheta];
             }
+    results << "# ws_r0 = " << ws_r0_in << " ws_xsi = " << ws_xsi_in << endl;
     results << "# r [fm]   rho_r [1/fm^3]   rho_r_std [1/fm^3]" << endl;
     for(int ir = 0; ir < n_r; ir++)
         results << scientific << setw(20) << setprecision(6) << r[ir] << "  " 
@@ -437,10 +438,10 @@ void MakeDensity::output_final_rho_r_vs_rho_r_std()
     return;
 }
 
-void MakeDensity::output_final_rho_r_theta_vs_rho_r_theta_std()
+void MakeDensity::output_final_rho_r_theta_vs_rho_r_theta_std(double ws_r0_in, double ws_xsi_in, double ws_beta2_in, double ws_beta4_in)
 {
     ofstream results("rho_r_theta_vs_rho_r_theta_std.dat");
-    calculate_density(ws_r0_best, ws_xsi_best, ws_beta2_best, ws_beta4_best);
+    calculate_density(ws_r0_in, ws_xsi_in, ws_beta2_in, ws_beta4_in);
     for(int ir = 0; ir < n_r; ir++)
     {
         for(int itheta = 0; itheta < n_theta; itheta++)
@@ -456,6 +457,8 @@ void MakeDensity::output_final_rho_r_theta_vs_rho_r_theta_std()
                  rho_r_theta[ir][itheta] += rho[ir][iphi][itheta]*phi_weight[iphi];
                  rho_r_theta_std[ir][itheta] += test_nucleus->standard_woods_saxon_distribution(r[ir], phi[iphi], cos_theta[itheta])*phi_weight[iphi];
             }
+    results << "# r0 = " << ws_r0_in << " xsi = " << ws_xsi_in 
+            << " beta2 = " << ws_beta2_in << " beta4 = " << ws_beta4_in << endl;
     results << "# r [fm]   rho_r_theta [1/fm^3]   rho_r_theta_std [1/fm^3]" << endl;
     int n_skip = 4;
     for(int ir = 0; ir < n_r; ir++)

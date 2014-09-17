@@ -49,8 +49,8 @@ class MakeDensity
         void fit_nucleus_parameters();
         void minimize_chisq();
         void minimize_chisq_deformed();
-        void output_final_rho_r_vs_rho_r_std();
-        void output_final_rho_r_theta_vs_rho_r_theta_std();
+        void output_final_rho_r_vs_rho_r_std(double ws_r0_in, double ws_xsi_in);
+        void output_final_rho_r_theta_vs_rho_r_theta_std(double ws_r0_in, double ws_xsi_in, double ws_beta2_in, double ws_beta4_in);
         static double CCallback_chisq_rho_r(const gsl_vector *x, void* params)
         {
             CCallbackHolder* h = static_cast<CCallbackHolder*>(params);
