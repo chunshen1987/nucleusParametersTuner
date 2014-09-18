@@ -16,13 +16,9 @@ MakeDensity::MakeDensity(ParameterReader *paraRdr_in)
 {
     paraRdr = paraRdr_in;
     n_event = paraRdr->getVal("n_event");
-
-    // NN cross sections in mb
-    double ecm = paraRdr->getVal("ecm");
-    double sig = hadronxsec::totalXsection(ecm, 0);
-    double sigel = hadronxsec::elasticXsection(sig, ecm, 0, 0);
-    siginNN = sig - sigel;
-    gauss_nucl_width = sqrt(siginNN/(8.*M_PI));
+    
+    // ref: http://arxiv.org/pdf/1108.5379.pdf
+    gauss_nucl_width = 0.473;  // calculated from sigma_nn_inel at sqrt{s} = 23.5 GeV
 
     r_max = paraRdr->getVal("r_max");
     n_r = paraRdr->getVal("n_r");
@@ -108,8 +104,8 @@ MakeDensity::~MakeDensity()
 double MakeDensity::calculate_density(double ws_r0, double ws_xsi)
 {
     // mc sample nucleus configuration and compute event averaged nucleon density distribution
-    double prefactor = 1./(pow(gauss_nucl_width, 3)*pow(M_PI, 1.5));
-    double sigma_sq = gauss_nucl_width*gauss_nucl_width;
+    double prefactor = 1./(pow(gauss_nucl_width, 3)*pow(2.*M_PI, 1.5));
+    double sigma_sq = 2.*gauss_nucl_width*gauss_nucl_width;
     test_nucleus->set_woods_saxon_parameters(ws_r0, ws_xsi);
     for(int ir = 0; ir < n_r; ir++)
          for(int iphi = 0; iphi < n_phi; iphi++)
@@ -155,8 +151,8 @@ double MakeDensity::calculate_density(double ws_r0, double ws_xsi)
 double MakeDensity::calculate_density(double ws_r0, double ws_xsi, double ws_beta2, double ws_beta4)
 {
     // mc sample nucleus configuration and compute event averaged nucleon density distribution
-    double prefactor = 1./(pow(gauss_nucl_width, 3)*pow(M_PI, 1.5));
-    double sigma_sq = gauss_nucl_width*gauss_nucl_width;
+    double prefactor = 1./(pow(gauss_nucl_width, 3)*pow(2.*M_PI, 1.5));
+    double sigma_sq = 2.*gauss_nucl_width*gauss_nucl_width;
     test_nucleus->set_woods_saxon_parameters(ws_r0, ws_xsi, ws_beta2, ws_beta4);
     for(int ir = 0; ir < n_r; ir++)
          for(int iphi = 0; iphi < n_phi; iphi++)

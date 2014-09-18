@@ -18,7 +18,6 @@ class MakeDensity
     private:
         ParameterReader *paraRdr;
         double gauss_nucl_width;          // gaussian width of nucleon size
-        double siginNN;                   // inelastic nucleon-nucleon cross section
 
         int n_r, n_phi, n_theta;
         double r_max;                     // maximum radius in nucleon density distribution

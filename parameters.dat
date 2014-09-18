@@ -3,7 +3,6 @@
 ###############################################
 
 atomic_num = 197          # atomic number of the nucleus
-ecm = 19.6                # collision energy [GeV]
 deformed = 1              # whether the nucleus is deformed or not
 randomSeed = -1           # If randomSeed < 0 then CPU time is used to seed
 r_min = 0.9               # minimum separation between nucleons [fm]
