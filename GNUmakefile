@@ -25,10 +25,10 @@ MAIN		=	nucleusParametersTuner.e
 endif
 
 SRC		=	main.cpp Nucleus.cpp ParameterReader.cpp MakeDensity.cpp \
-                  Regge96.cpp gauss_quadrature.cpp
+                  gauss_quadrature.cpp
 
 INC		= 	Nucleus.h ParameterReader.h Particle.h MakeDensity.h \
-                  Regge96.h gauss_quadrature.h
+                  gauss_quadrature.h
 
 
 # -------------------------------------------------
@@ -78,5 +78,5 @@ install:	$(TARGET)
 ./main.cpp: Nucleus.h ParameterReader.h MakeDensity.h
 ./Nucleus.cpp: Nucleus.h ParameterReader.h
 ./ParameterReader.cpp: ParameterReader.h
-./MakeDensity.cpp: MakeDensity.h Nucleus.h ParameterReader.h Regge96.h gauss_quadrature.h
+./MakeDensity.cpp: MakeDensity.h Nucleus.h ParameterReader.h gauss_quadrature.h
 ./gauss_quadrature.cpp: gauss_quadrature.h

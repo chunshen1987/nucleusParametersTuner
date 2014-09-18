@@ -1,7 +1,6 @@
 #include <iomanip>
 #include <fstream>
 
-#include "Regge96.h"
 #include "ParameterReader.h"
 #include "Nucleus.h"
 #include "MakeDensity.h"
