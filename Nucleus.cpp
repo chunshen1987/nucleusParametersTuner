@@ -3,6 +3,7 @@
 
 #include "Nucleus.h"
 #include "ParameterReader.h"
+#include "gauss_quadrature.h"
 
 using namespace std;
 
@@ -42,7 +43,7 @@ Nucleus::Nucleus(ParameterReader* paraRdr_in)
         //Taken from P.Filip et al.,PRC80,054903(2009)
         r_0_std = 6.81;
         xsi_std = 0.54;
-        rho_0 = 0.17;
+        rho_0 = 0.166;
     }
 
     if(deformed)
@@ -79,6 +80,37 @@ Nucleus::Nucleus(ParameterReader* paraRdr_in)
     xsi = xsi_std;
     beta2 = beta2_std;
     beta4 = beta4_std;
+
+    //determine rho_0 from atomic number
+    double r_max = paraRdr->getVal("r_max");
+    int n_r = paraRdr->getVal("n_r");
+    int n_phi = paraRdr->getVal("n_phi");
+    int n_theta = paraRdr->getVal("n_theta");
+
+    double *r = new double [n_r];
+    double *r_weight = new double [n_r];
+    gauss_quadrature(n_r, 1, 0.0, 0.0, 0.0, r_max, r, r_weight);
+    double *phi = new double [n_phi];
+    double *phi_weight = new double [n_phi];
+    gauss_quadrature(n_phi, 1, 0.0, 0.0, 0.0, 2*M_PI, phi, phi_weight);
+    double *cos_theta = new double [n_theta];
+    double *cos_theta_weight = new double [n_theta];
+    gauss_quadrature(n_theta, 1, 0.0, 0.0, -1.0, 1.0, cos_theta, cos_theta_weight);
+
+    double temp = 0.0;
+    for(int ir = 0; ir < n_r; ir++)
+        for(int iphi = 0; iphi < n_phi; iphi++)
+            for(int itheta = 0; itheta < n_theta; itheta++)
+                 temp += standard_woods_saxon_distribution(r[ir], phi[iphi], cos_theta[itheta])*r[ir]*r[ir]*r_weight[ir]*phi_weight[iphi]*cos_theta_weight[itheta];
+
+    rho_0 = rho_0*atomic_num/temp;
+
+    delete [] r;
+    delete [] r_weight;
+    delete [] phi;
+    delete [] phi_weight;
+    delete [] cos_theta;
+    delete [] cos_theta_weight;
 
     ws_max = rho_0;
 
