@@ -38,7 +38,7 @@ SRCFILES 	= 	$(SRC) $(INC) GNUmakefile
 OBJECTS		=	$(addprefix $(OBJDIR)/, $(addsuffix $O, \
 			$(basename $(SRC))))
 TARGET		=	$(MAIN)
-INSTPATH	=	$(HOME)/local/bin
+INSTPATH	=     ../
 
 # --------------- Pattern rules -------------------
 
@@ -76,7 +76,7 @@ install:	$(TARGET)
 
 # --------------- Dependencies -------------------
 ./main.cpp: Nucleus.h ParameterReader.h MakeDensity.h
-./Nucleus.cpp: Nucleus.h ParameterReader.h
+./Nucleus.cpp: Nucleus.h ParameterReader.h gauss_quadrature.h
 ./ParameterReader.cpp: ParameterReader.h
 ./MakeDensity.cpp: MakeDensity.h Nucleus.h ParameterReader.h gauss_quadrature.h
 ./gauss_quadrature.cpp: gauss_quadrature.h
